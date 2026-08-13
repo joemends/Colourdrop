@@ -176,133 +176,71 @@
   <script>
 
     async function loadGallery() {
+  const client = await initSupabase();
 
-      const client = await initSupabase();
+  if (!client) {
+    console.error("Supabase client unavailable.");
+    return;
+  }
 
-      if (!client) {
-        console.error("Supabase client unavailable.");
-        return;
+  const grid = document.getElementById("gallery-grid");
+  const empty = document.getElementById("gallery-empty");
+
+  const { data, error } = await client
+    .from("gallery")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Gallery loading error:", error);
+
+    grid.innerHTML = "";
+
+    empty.textContent = "Gallery could not be loaded.";
+    empty.style.display = "block";
+
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    grid.innerHTML = "";
+
+    empty.textContent = "No gallery images are currently available.";
+    empty.style.display = "block";
+
+    return;
+  }
+
+  empty.style.display = "none";
+
+  grid.innerHTML = data.map(item => `
+    <article class="gallery-card">
+
+      <img
+        src="${escapeAttr(item.image_url)}"
+        alt="${escapeAttr(
+          item.alt_text ||
+          item.title ||
+          "Print Innovation gallery image"
+        )}"
+        loading="lazy"
+      >
+
+      ${
+        item.title
+          ? `
+            <div class="gallery-info">
+              <h3>${escapeHtml(item.title)}</h3>
+            </div>
+          `
+          : ""
       }
 
-      const grid =
-        document.getElementById("gallery-grid");
-
-      const empty =
-        document.getElementById("gallery-empty");
-
-      const {
-        data,
-        error
-      } = await client
-        .from("gallery")
-        .select("*")
-        .eq("destination", "gallery")
-        .eq("published", true)
-        .order("created_at", {
-          ascending: false
-        });
-
-      if (error) {
-
-        console.error(
-          "Gallery loading error:",
-          error
-        );
-
-        empty.textContent =
-          "Gallery could not be loaded.";
-
-        empty.style.display = "block";
-
-        return;
-      }
-
-      if (!data || data.length === 0) {
-
-        empty.style.display = "block";
-
-        return;
-      }
-
-      empty.style.display = "none";
-
-      grid.innerHTML = data.map(item => `
-
-        <article class="gallery-card">
-
-          <img
-            src="${escapeAttr(item.image_url)}"
-            alt="${escapeAttr(
-              item.title ||
-              "Print Innovation gallery image"
-            )}"
-            loading="lazy"
-          >
-
-          ${
-            item.title || item.caption
-              ? `
-                <div class="gallery-info">
-
-                  ${
-                    item.title
-                      ? `<h3>${escapeHtml(item.title)}</h3>`
-                      : ""
-                  }
-
-                  ${
-                    item.caption
-                      ? `<p>${escapeHtml(item.caption)}</p>`
-                      : ""
-                  }
-
-                </div>
-              `
-              : ""
-          }
-
-        </article>
-
-      `).join("");
-
-    }
-
-    function escapeHtml(value) {
-
-      return String(value ?? "").replace(
-        /[&<>"']/g,
-        character => ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#039;"
-        }[character])
-      );
-
-    }
-
-    function escapeAttr(value) {
-      return escapeHtml(value);
-    }
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      async () => {
-
-        const year =
-          document.querySelector("[data-year]");
-
-        if (year) {
-          year.textContent =
-            new Date().getFullYear();
-        }
-
-        await loadGallery();
-
-      }
-    );
-
+    </article>
+  `).join("");
+}
   </script>
 
 </body>
