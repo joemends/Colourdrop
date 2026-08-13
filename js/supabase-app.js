@@ -63,10 +63,11 @@ async function submitInquiry(form) {
 
 async function signIn(email, password) {
   const client = await initSupabase();
-  if (!client) return;
-  const { error } = await client.auth.signInWithPassword({ email, password });
+  if (!client) throw new Error("Supabase is not configured. Check Netlify environment variables and redeploy.");
+  const { data, error } = await client.auth.signInWithPassword({ email: email.trim(), password });
   if (error) throw error;
-  location.href = "admin.html";
+  if (!data?.session) throw new Error("No login session was created.");
+  window.location.href = "admin.html";
 }
 
 async function signOut() {
