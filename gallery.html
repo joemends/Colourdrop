@@ -216,31 +216,31 @@
   empty.style.display = "none";
 
   grid.innerHTML = data.map(item => `
-    <article class="gallery-card">
+  <article class="gallery-card">
 
-      <img
-        src="${escapeAttr(item.image_url)}"
-        alt="${escapeAttr(
-          item.alt_text ||
-          item.title ||
-          "Print Innovation gallery image"
-        )}"
-        loading="lazy"
-      >
+    <img
+      src="${escapeAttr(item.image_url)}"
+      alt="${escapeAttr(
+        item.alt_text ||
+        item.title ||
+        "Print Innovation gallery image"
+      )}"
+      loading="lazy"
+      onerror="this.style.display='none'; this.parentElement.classList.add('image-error')"
+    >
 
-      ${
-        item.title
-          ? `
-            <div class="gallery-info">
-              <h3>${escapeHtml(item.title)}</h3>
-            </div>
-          `
-          : ""
-      }
+    ${
+      item.title
+        ? `
+          <div class="gallery-info">
+            <h3>${escapeHtml(item.title)}</h3>
+          </div>
+        `
+        : ""
+    }
 
-    </article>
-  `).join("");
-}
+  </article>
+`).join("");
   </script>
 
 </body>
