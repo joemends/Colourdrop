@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Gallery | Print Innovation</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .gallery-card {
+      overflow: hidden;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 12px 35px rgba(0,0,0,.08);
+    }
+
+    .gallery-card img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s ease;
+    }
+
+    .gallery-card:hover img {
+      transform: scale(1.04);
+    }
+
+    .gallery-info {
+      padding: 18px;
+    }
+
+    .gallery-info h3 {
+      margin: 0;
+    }
+
+    .gallery-info p {
+      margin: 8px 0 0;
+      opacity: .7;
+    }
+
+    .gallery-empty {
+      text-align: center;
+      padding: 70px 20px;
+      opacity: .65;
+    }
+
+    @media (max-width: 900px) {
+      .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .gallery-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="container">
+      <span>Branding · Advertising · Publishing</span>
+      <span>+233 (0) 267 771 670</span>
+    </div>
+  </div>
+
+  <header class="nav">
+    <div class="container nav-inner">
+
+      <a class="logo" href="index.html">
+        <span class="logo-mark"></span>
+        PRINT INNOVATION
+      </a>
+
+      <button class="menu" aria-label="Open menu">☰</button>
+
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="publishing.html">Publishing</a>
+        <a href="clientele.html">Clientele</a>
+        <a href="gallery.html" aria-current="page">Gallery</a>
+        <a href="contact.html">Contact</a>
+        <a href="intake-forms.html">Intake Forms</a>
+      </nav>
+
+      <div class="nav-cta">
+        <a class="btn primary" href="contact.html">
+          Get a Quote
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <main>
+
+    <section class="page-hero">
+
+      <div class="container reveal">
+
+        <div class="eyebrow">
+          Our Work
+        </div>
+
+        <h1>
+          Print Innovation
+          <br>
+          <span style="color:var(--accent)">Gallery.</span>
+        </h1>
+
+        <p>
+          A selection of our printing, branding, publishing and creative work.
+        </p>
+
+      </div>
+
+    </section>
+
+    <section class="section">
+
+      <div class="container">
+
+        <div
+          id="gallery-grid"
+          class="gallery-grid"
+        ></div>
+
+        <div
+          id="gallery-empty"
+          class="gallery-empty"
+          style="display:none"
+        >
+          No gallery images are currently available.
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="footer">
+
+    <div class="container footer-bottom">
+
+      <span>
+        © <span data-year></span> Print Innovation. All Rights Reserved.
+      </span>
+
+      <span>
+        Branding · Advertising · Publishing
+      </span>
+
+    </div>
+
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="js/supabase-app.js"></script>
+
+  <script>
+
+    async function loadGallery() {
+
+      const client = await initSupabase();
+
+      if (!client) {
+        console.error("Supabase client unavailable.");
+        return;
+      }
+
+      const grid =
+        document.getElementById("gallery-grid");
+
+      const empty =
+        document.getElementById("gallery-empty");
+
+      const {
+        data,
+        error
+      } = await client
+        .from("media")
+        .select("*")
+        .eq("destination", "gallery")
+        .eq("published", true)
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (error) {
+
+        console.error(
+          "Gallery loading error:",
+          error
+        );
+
+        empty.textContent =
+          "Gallery could not be loaded.";
+
+        empty.style.display = "block";
+
+        return;
+      }
+
+      if (!data || data.length === 0) {
+
+        empty.style.display = "block";
+
+        return;
+      }
+
+      empty.style.display = "none";
+
+      grid.innerHTML = data.map(item => `
+
+        <article class="gallery-card">
+
+          <img
+            src="${escapeAttr(item.image_url)}"
+            alt="${escapeAttr(
+              item.title ||
+              "Print Innovation gallery image"
+            )}"
+            loading="lazy"
+          >
+
+          ${
+            item.title || item.caption
+              ? `
+                <div class="gallery-info">
+
+                  ${
+                    item.title
+                      ? `<h3>${escapeHtml(item.title)}</h3>`
+                      : ""
+                  }
+
+                  ${
+                    item.caption
+                      ? `<p>${escapeHtml(item.caption)}</p>`
+                      : ""
+                  }
+
+                </div>
+              `
+              : ""
+          }
+
+        </article>
+
+      `).join("");
+
+    }
+
+    function escapeHtml(value) {
+
+      return String(value ?? "").replace(
+        /[&<>"']/g,
+        character => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        }[character])
+      );
+
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      async () => {
+
+        const year =
+          document.querySelector("[data-year]");
+
+        if (year) {
+          year.textContent =
+            new Date().getFullYear();
+        }
+
+        await loadGallery();
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
