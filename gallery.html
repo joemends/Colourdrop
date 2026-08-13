@@ -194,7 +194,7 @@
         data,
         error
       } = await client
-        .from("media")
+        .from("gallery")
         .select("*")
         .eq("destination", "gallery")
         .eq("published", true)
