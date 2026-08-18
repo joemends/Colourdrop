@@ -284,32 +284,36 @@
 
   empty.style.display = "none";
 
-  grid.innerHTML = data.map(item => `
-  <article class="gallery-card">
+  grid.innerHTML = data.map(item => {
+    const imageUrl = item.image_url
+      ? `${item.image_url}${item.image_url.includes("?") ? "&" : "?"}v=${encodeURIComponent(item.created_at || Date.now())}`
+      : "";
 
-    <img
-      src="${escapeAttr(item.image_url)}"
-      alt="${escapeAttr(
-        item.alt_text ||
-        item.title ||
-        "Color Drop gallery image"
-      )}"
-      loading="lazy"
-      onerror="this.style.display='none'; this.parentElement.classList.add('image-error')"
-    >
+    return `
+      <article class="gallery-card">
+        ${
+          imageUrl
+            ? `<img
+                src="${escapeAttr(imageUrl)}"
+                alt="${escapeAttr(item.alt_text || item.title || "Color Drop gallery image")}"
+                loading="lazy"
+                onerror="this.style.display='none'; this.parentElement.classList.add('image-error')"
+              >`
+            : ""
+        }
+        ${
+          item.title
+            ? `<div class="gallery-info">
+                <h3>${escapeHtml(item.title)}</h3>
+              </div>`
+            : ""
+        }
+      </article>
+    `;
+  }).join("");
+}
 
-    ${
-      item.title
-        ? `
-          <div class="gallery-info">
-            <h3>${escapeHtml(item.title)}</h3>
-          </div>
-        `
-        : ""
-    }
-
-  </article>
-`).join("");
+loadGallery();
   </script>
  </body>
 </html>
