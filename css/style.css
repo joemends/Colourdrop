@@ -253,6 +253,7 @@ p{
   right:-180px;
   top:10%;
   filter:blur(2px);
+  z-index: -10;
 }
 
 .hero-grid{
