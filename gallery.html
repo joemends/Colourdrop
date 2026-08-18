@@ -1,15 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Gallery | Print Innovation</title>
-
-  <link rel="stylesheet" href="css/style.css">
-
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Gallery | Color Drop
+  </title>
+  <link href="css/style.css" rel="stylesheet"/>
   <style>
-    .gallery-grid {
+   .gallery-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
@@ -65,117 +64,110 @@
       }
     }
   </style>
-</head>
-
-<body>
-
+ </head>
+ <body>
   <div class="topbar">
-    <div class="container">
-      <span>Branding · Advertising · Publishing</span>
-      <span>+233 (0) 267 771 670</span>
-    </div>
+   <div class="container">
+    <span>
+     Branding &middot; Advertising &middot; Publishing
+    </span>
+    <span>
+     +233 (0) 267 771 670
+    </span>
+   </div>
   </div>
-
   <header class="nav">
-    <div class="container nav-inner">
-
-      <a class="logo" href="index.html">
-        <span class="logo-mark"></span>
-        PRINT INNOVATION
-      </a>
-
-      <button class="menu" aria-label="Open menu">☰</button>
-
-      <nav class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="services.html">Services</a>
-        <a href="publishing.html">Publishing</a>
-        <a href="clientele.html">Clientele</a>
-        <a href="gallery.html" aria-current="page">Gallery</a>
-        <a href="contact.html">Contact</a>
-        <a href="intake-forms.html">Intake Forms</a>
-      </nav>
-
-      <div class="nav-cta">
-        <a class="btn primary" href="contact.html">
-          Get a Quote
-        </a>
-      </div>
-
+   <div class="container nav-inner">
+    <a class="logo" href="index.html">
+     <span class="logo-mark">
+     </span>
+     Color Drop
+    </a>
+    <button aria-label="Open menu" class="menu">
+     ☰
+    </button>
+    <nav class="nav-links">
+     <a href="index.html">
+      Home
+     </a>
+     <a href="about.html">
+      About
+     </a>
+     <a href="services.html">
+      Services
+     </a>
+     <a href="publishing.html">
+      Publishing
+     </a>
+     <a href="clientele.html">
+      Clientele
+     </a>
+     <a aria-current="page" href="gallery.html">
+      Gallery
+     </a>
+     <a href="contact.html">
+      Contact
+     </a>
+     <a href="intake-forms.html">
+      Intake Forms
+     </a>
+    </nav>
+    <div class="nav-cta">
+     <a class="btn primary" href="contact.html">
+      Get a Quote
+     </a>
     </div>
+   </div>
   </header>
-
   <main>
-
-    <section class="page-hero">
-
-      <div class="container reveal">
-
-        <div class="eyebrow">
-          Our Work
-        </div>
-
-        <h1>
-          Print Innovation
-          <br>
-          <span style="color:var(--accent)">Gallery.</span>
-        </h1>
-
-        <p>
-          A selection of our printing, branding, publishing and creative work.
-        </p>
-
-      </div>
-
-    </section>
-
-    <section class="section">
-
-      <div class="container">
-
-        <div
-          id="gallery-grid"
-          class="gallery-grid"
-        ></div>
-
-        <div
-          id="gallery-empty"
-          class="gallery-empty"
-          style="display:none"
-        >
-          No gallery images are currently available.
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-  <footer class="footer">
-
-    <div class="container footer-bottom">
-
-      <span>
-        © <span data-year></span> Print Innovation. All Rights Reserved.
+   <section class="page-hero">
+    <div class="container reveal">
+     <div class="eyebrow">
+      Our Work
+     </div>
+     <h1>
+      Color Drop
+      <br/>
+      <span style="color:var(--accent)">
+       Gallery.
       </span>
-
-      <span>
-        Branding · Advertising · Publishing
-      </span>
-
+     </h1>
+     <p>
+      A selection of our printing, branding, publishing and creative work.
+     </p>
     </div>
-
+   </section>
+   <section class="section">
+    <div class="container">
+     <div class="gallery-grid" id="gallery-grid">
+     </div>
+     <div class="gallery-empty" id="gallery-empty" style="display:none">
+      No gallery images are currently available.
+     </div>
+    </div>
+   </section>
+  </main>
+  <footer class="footer">
+   <div class="container footer-bottom">
+    <span>
+     &copy;
+     <span data-year="">
+     </span>
+     Color Drop. All Rights Reserved.
+    </span>
+    <span>
+     Branding &middot; Advertising &middot; Publishing
+    </span>
+   </div>
   </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="js/supabase-app.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  </script>
+  <script src="supabase-config.js">
+  </script>
+  <script src="js/supabase-app.js">
+  </script>
   <script>
-
-    async function loadGallery() {
+   async function loadGallery() {
   const client = await initSupabase();
 
   if (!client) {
@@ -223,7 +215,7 @@
       alt="${escapeAttr(
         item.alt_text ||
         item.title ||
-        "Print Innovation gallery image"
+        "Color Drop gallery image"
       )}"
       loading="lazy"
       onerror="this.style.display='none'; this.parentElement.classList.add('image-error')"
@@ -242,6 +234,5 @@
   </article>
 `).join("");
   </script>
-
-</body>
+ </body>
 </html>

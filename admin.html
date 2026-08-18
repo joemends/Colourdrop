@@ -1,18 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>Print Innovation Admin</title>
-
-<link rel="stylesheet" href="css/style.css">
-
-<style>
-
-.admin-shell{
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+  <title>
+   Color Drop Admin
+  </title>
+  <link href="css/style.css" rel="stylesheet"/>
+  <style>
+   .admin-shell{
   padding:55px 0;
 }
 
@@ -174,405 +170,220 @@
   }
 
 }
-
-</style>
-
-</head>
-
-
-<body data-admin="true">
-
-
-<div class="topbar">
-
-  <div class="container">
-
-    <span>Print Innovation Admin</span>
-
-    <span data-user-email></span>
-
+  </style>
+ </head>
+ <body data-admin="true">
+  <div class="topbar">
+   <div class="container">
+    <span>
+     Color Drop Admin
+    </span>
+    <span data-user-email="">
+    </span>
+   </div>
   </div>
-
-</div>
-
-
-<header class="nav">
-
-  <div class="container nav-inner">
-
+  <header class="nav">
+   <div class="container nav-inner">
     <a class="logo" href="index.html">
-
-      <span class="logo-mark"></span>
-
-      PRINT INNOVATION
-
+     <span class="logo-mark">
+     </span>
+     Color Drop
     </a>
-
     <button class="btn" onclick="signOut()">
-      Sign out
+     Sign out
     </button>
-
-  </div>
-
-</header>
-
-
-<main class="admin-shell">
-
-<div class="container">
-
-
-<div class="admin-top">
-
-  <div>
-
-    <div class="eyebrow">
-      Dashboard
-    </div>
-
-    <h1 style="font-size:3.5rem">
-      Admin portal.
-    </h1>
-
-    <p style="margin-top:10px">
-      Manage enquiries and your website content through Supabase.
-    </p>
-
-  </div>
-
-</div>
-
-
-<div class="admin-nav">
-
-  <button
-    onclick="document.getElementById('inquiries').scrollIntoView({behavior:'smooth'})">
-    Enquiries
-  </button>
-
-  <button
-    onclick="document.getElementById('media').scrollIntoView({behavior:'smooth'})">
-    Media
-  </button>
-
-</div>
-
-
-
-<!-- ========================= -->
-<!-- ENQUIRIES -->
-<!-- ========================= -->
-
-<section
-  id="inquiries"
-  class="admin-card"
->
-
-  <div class="eyebrow">
-    Contact submissions
-  </div>
-
-  <h2 style="font-size:2.5rem;margin-bottom:20px">
-    Recent enquiries
-  </h2>
-
-
-  <div style="overflow:auto">
-
-    <table class="admin-table">
-
-      <thead>
-
-        <tr>
-
-          <th>Name</th>
-
-          <th>Email</th>
-
-          <th>Phone</th>
-
-          <th>Service</th>
-
-          <th>Message</th>
-
-          <th>Date</th>
-
-          <th>Action</th>
-
-        </tr>
-
-      </thead>
-
-
-      <tbody id="inquiries-body">
-
-        <tr>
-
-          <td colspan="7">
-            Loading…
-          </td>
-
-        </tr>
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-</section>
-
-
-
-<!-- ========================= -->
-<!-- MEDIA -->
-<!-- ========================= -->
-
-<section
-  id="media"
-  class="admin-card"
->
-
-  <div class="eyebrow">
-    Storage
-  </div>
-
-  <h2 style="font-size:2.5rem">
-    Media Manager
-  </h2>
-
-  <p style="margin:12px 0 25px">
-
-    Upload images to your Supabase Storage and publish them to the
-    website Gallery.
-
-  </p>
-
-
-  <form
-    id="media-form"
-    class="media-form"
-  >
-
-
-    <!-- IMAGE -->
-
-    <div>
-
-      <label for="admin-image">
-        Image
-      </label>
-
-      <input
-        id="admin-image"
-        type="file"
-        accept="image/*"
-        required
-      >
-
-      <div class="media-preview">
-
-        <span id="preview-text">
-          Image preview
-        </span>
-
-        <img
-          id="media-preview-image"
-          alt="Selected image preview"
-        >
-
+   </div>
+  </header>
+  <main class="admin-shell">
+   <div class="container">
+    <div class="admin-top">
+     <div>
+      <div class="eyebrow">
+       Dashboard
       </div>
-
+      <h1 style="font-size:3.5rem">
+       Admin portal.
+      </h1>
+      <p style="margin-top:10px">
+       Manage enquiries and your website content through Supabase.
+      </p>
+     </div>
     </div>
-
-
-
-    <!-- TITLE -->
-
-    <div>
-
-      <label for="media-title">
-        Title
-      </label>
-
-      <input
-        id="media-title"
-        type="text"
-        placeholder="e.g. Corporate Branding Project"
-      >
-
+    <div class="admin-nav">
+     <button onclick="document.getElementById('inquiries').scrollIntoView({behavior:'smooth'})">
+      Enquiries
+     </button>
+     <button onclick="document.getElementById('media').scrollIntoView({behavior:'smooth'})">
+      Media
+     </button>
     </div>
-
-
-
-    <!-- ALT TEXT -->
-
-    <div>
-
-      <label for="media-alt">
-        Alt text
-      </label>
-
-      <input
-        id="media-alt"
-        type="text"
-        placeholder="Describe the image"
-      >
-
-    </div>
-
-
-
-    <!-- CATEGORY -->
-
-    <div>
-
-      <label for="media-category">
-        Destination
-      </label>
-
-      <select id="media-category">
-
-        <option value="gallery">
-          Gallery
-        </option>
-
-      </select>
-
-    </div>
-
-
-
-    <!-- SORT ORDER -->
-
-    <div>
-
-      <label for="media-sort">
-        Sort order
-      </label>
-
-      <input
-        id="media-sort"
-        type="number"
-        value="0"
-        min="0"
-      >
-
-    </div>
-
-
-
-    <!-- PUBLISHED -->
-
-    <div>
-
-      <label>
-
-        <input
-          id="media-published"
-          type="checkbox"
-          checked
-        >
-
-        Publish this image
-
-      </label>
-
-    </div>
-
-
-
-    <button
-      id="media-upload-button"
-      class="btn primary"
-      type="submit"
-    >
-
-      Upload to Gallery
-
-    </button>
-
-
-  </form>
-
-
-  <div
-    id="upload-result"
-    class="upload-status"
-  ></div>
-
-
-
-  <!-- EXISTING GALLERY -->
-
-  <div class="media-list">
-
-    <h3>
-      Gallery Images
-    </h3>
-
-    <div style="overflow:auto;margin-top:15px">
-
+    <!-- ========================= -->
+    <!-- ENQUIRIES -->
+    <!-- ========================= -->
+    <section class="admin-card" id="inquiries">
+     <div class="eyebrow">
+      Contact submissions
+     </div>
+     <h2 style="font-size:2.5rem;margin-bottom:20px">
+      Recent enquiries
+     </h2>
+     <div style="overflow:auto">
       <table class="admin-table">
-
-        <thead>
-
-          <tr>
-
-            <th>Image</th>
-
-            <th>Title</th>
-
-            <th>Category</th>
-
-            <th>Published</th>
-
-            <th>Action</th>
-
-          </tr>
-
-        </thead>
-
-
-        <tbody id="gallery-body">
-
-          <tr>
-
-            <td colspan="5">
-              Loading…
-            </td>
-
-          </tr>
-
-        </tbody>
-
+       <thead>
+        <tr>
+         <th>
+          Name
+         </th>
+         <th>
+          Email
+         </th>
+         <th>
+          Phone
+         </th>
+         <th>
+          Service
+         </th>
+         <th>
+          Message
+         </th>
+         <th>
+          Date
+         </th>
+         <th>
+          Action
+         </th>
+        </tr>
+       </thead>
+       <tbody id="inquiries-body">
+        <tr>
+         <td colspan="7">
+          Loading&hellip;
+         </td>
+        </tr>
+       </tbody>
       </table>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-</div>
-
-</main>
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="supabase-config.js"></script>
-
-<script src="js/supabase-app.js"></script>
-
-
-
-<script>
-
-
-/* =====================================
+     </div>
+    </section>
+    <!-- ========================= -->
+    <!-- MEDIA -->
+    <!-- ========================= -->
+    <section class="admin-card" id="media">
+     <div class="eyebrow">
+      Storage
+     </div>
+     <h2 style="font-size:2.5rem">
+      Media Manager
+     </h2>
+     <p style="margin:12px 0 25px">
+      Upload images to your Supabase Storage and publish them to the
+    website Gallery.
+     </p>
+     <form class="media-form" id="media-form">
+      <!-- IMAGE -->
+      <div>
+       <label for="admin-image">
+        Image
+       </label>
+       <input accept="image/*" id="admin-image" required="" type="file"/>
+       <div class="media-preview">
+        <span id="preview-text">
+         Image preview
+        </span>
+        <img alt="Selected image preview" id="media-preview-image"/>
+       </div>
+      </div>
+      <!-- TITLE -->
+      <div>
+       <label for="media-title">
+        Title
+       </label>
+       <input id="media-title" placeholder="e.g. Corporate Branding Project" type="text"/>
+      </div>
+      <!-- ALT TEXT -->
+      <div>
+       <label for="media-alt">
+        Alt text
+       </label>
+       <input id="media-alt" placeholder="Describe the image" type="text"/>
+      </div>
+      <!-- CATEGORY -->
+      <div>
+       <label for="media-category">
+        Destination
+       </label>
+       <select id="media-category">
+        <option value="gallery">
+         Gallery
+        </option>
+       </select>
+      </div>
+      <!-- SORT ORDER -->
+      <div>
+       <label for="media-sort">
+        Sort order
+       </label>
+       <input id="media-sort" min="0" type="number" value="0"/>
+      </div>
+      <!-- PUBLISHED -->
+      <div>
+       <label>
+        <input checked="" id="media-published" type="checkbox"/>
+        Publish this image
+       </label>
+      </div>
+      <button class="btn primary" id="media-upload-button" type="submit">
+       Upload to Gallery
+      </button>
+     </form>
+     <div class="upload-status" id="upload-result">
+     </div>
+     <!-- EXISTING GALLERY -->
+     <div class="media-list">
+      <h3>
+       Gallery Images
+      </h3>
+      <div style="overflow:auto;margin-top:15px">
+       <table class="admin-table">
+        <thead>
+         <tr>
+          <th>
+           Image
+          </th>
+          <th>
+           Title
+          </th>
+          <th>
+           Category
+          </th>
+          <th>
+           Published
+          </th>
+          <th>
+           Action
+          </th>
+         </tr>
+        </thead>
+        <tbody id="gallery-body">
+         <tr>
+          <td colspan="5">
+           Loading&hellip;
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </div>
+    </section>
+   </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  </script>
+  <script src="supabase-config.js">
+  </script>
+  <script src="js/supabase-app.js">
+  </script>
+  <script>
+   /* =====================================
    ADMIN INITIALIZATION
 ===================================== */
 
@@ -595,8 +406,6 @@ document.addEventListener(
   }
 );
 
-
-
 /* =====================================
    IMAGE PREVIEW
 ===================================== */
@@ -611,7 +420,6 @@ function setupImagePreview(){
 
   const text =
     document.getElementById("preview-text");
-
 
   input.addEventListener(
     "change",
@@ -629,7 +437,6 @@ function setupImagePreview(){
 
       }
 
-
       const url =
         URL.createObjectURL(file);
 
@@ -644,8 +451,6 @@ function setupImagePreview(){
 
 }
 
-
-
 /* =====================================
    MEDIA UPLOAD
 ===================================== */
@@ -655,13 +460,11 @@ function setupMediaForm(){
   const form =
     document.getElementById("media-form");
 
-
   form.addEventListener(
     "submit",
     async event => {
 
       event.preventDefault();
-
 
       const input =
         document.getElementById("admin-image");
@@ -672,19 +475,16 @@ function setupMediaForm(){
           .value
           .trim();
 
-
       const altText =
         document
           .getElementById("media-alt")
           .value
           .trim();
 
-
       const category =
         document
           .getElementById("media-category")
           .value;
-
 
       const sortOrder =
         Number(
@@ -693,26 +493,21 @@ function setupMediaForm(){
             .value
         ) || 0;
 
-
       const published =
         document
           .getElementById("media-published")
           .checked;
 
-
       const result =
         document.getElementById("upload-result");
-
 
       const button =
         document.getElementById(
           "media-upload-button"
         );
 
-
       const file =
         input.files[0];
-
 
       if (!file){
 
@@ -725,21 +520,17 @@ function setupMediaForm(){
 
       }
 
-
       button.disabled = true;
 
       button.textContent =
         "Uploading…";
-
 
       showUploadResult(
         "Uploading image…",
         "success"
       );
 
-
       try{
-
 
         /*
          * STEP 1
@@ -752,7 +543,6 @@ function setupMediaForm(){
             "site-images"
           );
 
-
         /*
          * STEP 2
          * Save image information
@@ -762,7 +552,6 @@ function setupMediaForm(){
         const client =
           await initSupabase();
 
-
         if (!client){
 
           throw new Error(
@@ -770,7 +559,6 @@ function setupMediaForm(){
           );
 
         }
-
 
         const {
           error
@@ -790,7 +578,7 @@ function setupMediaForm(){
             alt_text:
               altText ||
               title ||
-              "Print Innovation gallery image",
+              "Color Drop gallery image",
 
             sort_order:
               sortOrder,
@@ -800,19 +588,16 @@ function setupMediaForm(){
 
           });
 
-
         if (error){
 
           throw error;
 
         }
 
-
         showUploadResult(
           "Image uploaded and added to the Gallery successfully.",
           "success"
         );
-
 
         /*
          * Reset form
@@ -824,28 +609,23 @@ function setupMediaForm(){
           "media-published"
         ).checked = true;
 
-
         document.getElementById(
           "media-sort"
         ).value = 0;
-
 
         document.getElementById(
           "media-preview-image"
         ).style.display = "none";
 
-
         document.getElementById(
           "preview-text"
         ).style.display = "block";
-
 
         /*
          * Refresh gallery list
          */
 
         await loadGallery();
-
 
       }catch(error){
 
@@ -854,13 +634,11 @@ function setupMediaForm(){
           error
         );
 
-
         showUploadResult(
           "Upload failed: " +
           (error.message || error),
           "error"
         );
-
 
       }finally{
 
@@ -876,8 +654,6 @@ function setupMediaForm(){
 
 }
 
-
-
 /* =====================================
    SHOW UPLOAD MESSAGE
 ===================================== */
@@ -892,17 +668,13 @@ function showUploadResult(
       "upload-result"
     );
 
-
   result.textContent =
     message;
-
 
   result.className =
     "upload-status " + type;
 
 }
-
-
 
 /* =====================================
    LOAD ENQUIRIES
@@ -913,9 +685,7 @@ async function loadInquiries(){
   const client =
     await initSupabase();
 
-
   if (!client) return;
-
 
   const {
     data,
@@ -930,15 +700,12 @@ async function loadInquiries(){
       }
     );
 
-
   const tbody =
     document.getElementById(
       "inquiries-body"
     );
 
-
   if (!tbody) return;
-
 
   if (error){
 
@@ -946,7 +713,6 @@ async function loadInquiries(){
       "Inquiry loading error:",
       error
     );
-
 
     tbody.innerHTML = `
       <tr>
@@ -956,11 +722,9 @@ async function loadInquiries(){
       </tr>
     `;
 
-
     return;
 
   }
-
 
   if (!data || !data.length){
 
@@ -972,11 +736,9 @@ async function loadInquiries(){
       </tr>
     `;
 
-
     return;
 
   }
-
 
   tbody.innerHTML =
     data.map(
@@ -1032,8 +794,6 @@ async function loadInquiries(){
 
 }
 
-
-
 /* =====================================
    DELETE INQUIRY
 ===================================== */
@@ -1050,12 +810,10 @@ async function deleteInquiry(id){
 
   }
 
-
   try{
 
     const client =
       await initSupabase();
-
 
     if (!client){
 
@@ -1065,7 +823,6 @@ async function deleteInquiry(id){
 
     }
 
-
     const {
       error
     } = await client
@@ -1073,21 +830,17 @@ async function deleteInquiry(id){
       .delete()
       .eq("id", id);
 
-
     if (error){
 
       throw error;
 
     }
 
-
     showNotice(
       "Enquiry deleted successfully."
     );
 
-
     await loadInquiries();
-
 
   }catch(error){
 
@@ -1095,7 +848,6 @@ async function deleteInquiry(id){
       "Delete enquiry error:",
       error
     );
-
 
     showNotice(
       "Could not delete enquiry.",
@@ -1106,8 +858,6 @@ async function deleteInquiry(id){
 
 }
 
-
-
 /* =====================================
    LOAD GALLERY
 ===================================== */
@@ -1117,15 +867,12 @@ async function loadGallery(){
   const client =
     await initSupabase();
 
-
   if (!client) return;
-
 
   const tbody =
     document.getElementById(
       "gallery-body"
     );
-
 
   const {
     data,
@@ -1146,14 +893,12 @@ async function loadGallery(){
       }
     );
 
-
   if (error){
 
     console.error(
       "Gallery loading error:",
       error
     );
-
 
     tbody.innerHTML = `
       <tr>
@@ -1163,11 +908,9 @@ async function loadGallery(){
       </tr>
     `;
 
-
     return;
 
   }
-
 
   if (!data || !data.length){
 
@@ -1179,11 +922,9 @@ async function loadGallery(){
       </tr>
     `;
 
-
     return;
 
   }
-
 
   tbody.innerHTML =
     data.map(
@@ -1230,8 +971,6 @@ async function loadGallery(){
 
 }
 
-
-
 /* =====================================
    DELETE GALLERY ITEM
 ===================================== */
@@ -1248,12 +987,10 @@ async function deleteGalleryItem(id){
 
   }
 
-
   try{
 
     const client =
       await initSupabase();
-
 
     if (!client){
 
@@ -1263,7 +1000,6 @@ async function deleteGalleryItem(id){
 
     }
 
-
     const {
       error
     } = await client
@@ -1271,21 +1007,17 @@ async function deleteGalleryItem(id){
       .delete()
       .eq("id", id);
 
-
     if (error){
 
       throw error;
 
     }
 
-
     showNotice(
       "Gallery image deleted successfully."
     );
 
-
     await loadGallery();
-
 
   }catch(error){
 
@@ -1293,7 +1025,6 @@ async function deleteGalleryItem(id){
       "Delete gallery error:",
       error
     );
-
 
     showNotice(
       "Could not delete gallery image.",
@@ -1303,8 +1034,6 @@ async function deleteGalleryItem(id){
   }
 
 }
-
-
 
 /* =====================================
    ESCAPE HTML
@@ -1327,14 +1056,11 @@ function escapeHtml(value){
 
 }
 
-
 function escapeAttr(value){
 
   return escapeHtml(value);
 
 }
-
-</script>
-
-</body>
+  </script>
+ </body>
 </html>
