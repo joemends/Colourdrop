@@ -3,7 +3,7 @@ const menu = document.querySelector('.menu');
 const navLinks = document.querySelector('.nav-links');
 if(menu){
   menu.addEventListener('click',()=>navLinks.classList.toggle('open'));
-  navLinks?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>navLinks.classList.remove('open')));
+  navLinks?.addEventListener('click',()=>navLinks.classList.remove('open')));
 }
 
 const observer = new IntersectionObserver(entries=>{
