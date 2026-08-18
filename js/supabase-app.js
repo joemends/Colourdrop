@@ -5,7 +5,7 @@ let supabaseClient = null;
 async function initSupabase() {
   if (window.supabaseClient) return window.supabaseClient;
   if (!window.supabaseConfig || !window.supabaseConfig.url || !window.supabaseConfig.anonKey) {
-    console.warn("Supabase is not configured yet. Add SUPABASE_URL and SUPABASE_ANON_KEY in Netlify.");
+    console.warn("Supabase is not configured yet. Add SUPABASE_URL and SUPABASE_ANON_KEY to your GitHub repository Actions secrets.");
     return null;
   }
   if (!window.supabase) {
@@ -63,7 +63,7 @@ async function submitInquiry(form) {
 
 async function signIn(email, password) {
   const client = await initSupabase();
-  if (!client) throw new Error("Supabase is not configured. Check Netlify environment variables and redeploy.");
+  if (!client) throw new Error("Supabase is not configured. Check your GitHub Actions secrets and redeploy.");
   const { data, error } = await client.auth.signInWithPassword({ email: email.trim(), password });
   if (error) throw error;
   if (!data?.session) throw new Error("No login session was created.");
