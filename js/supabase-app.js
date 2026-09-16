@@ -1,27 +1,36 @@
-
-/* Print Innovation — Supabase-powered frontend */
+/* Color Drop — shared Supabase helpers */
 let supabaseClient = null;
 
 async function initSupabase() {
-  if (window.supabaseClient) return window.supabaseClient;
-  if (!window.supabaseConfig || !window.supabaseConfig.url || !window.supabaseConfig.anonKey) {
-    console.warn("Supabase is not configured yet. Add SUPABASE_URL and SUPABASE_ANON_KEY to your GitHub repository Actions secrets.");
+  if (supabaseClient) return supabaseClient;
+  if (window.supabaseClient) {
+    supabaseClient = window.supabaseClient;
+    return supabaseClient;
+  }
+
+  const config = window.supabaseConfig;
+  if (!config?.url || !config?.anonKey) {
+    console.error("Supabase configuration is missing.");
     return null;
   }
-  if (!window.supabase) {
+  if (!window.supabase?.createClient) {
     console.error("Supabase SDK was not loaded.");
     return null;
   }
-  supabaseClient = window.supabase.createClient(
-    window.supabaseConfig.url,
-    window.supabaseConfig.anonKey,
-    { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
-  );
+
+  supabaseClient = window.supabase.createClient(config.url, config.anonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: "pkce"
+    }
+  });
   window.supabaseClient = supabaseClient;
   return supabaseClient;
 }
 
-function showNotice(message, type="success") {
+function showNotice(message, type = "success") {
   let el = document.querySelector("#site-notice");
   if (!el) {
     el = document.createElement("div");
@@ -32,7 +41,38 @@ function showNotice(message, type="success") {
   el.textContent = message;
   el.style.borderLeft = `5px solid ${type === "error" ? "#e23b3b" : "#a51aa8"}`;
   clearTimeout(window.noticeTimer);
-  window.noticeTimer = setTimeout(()=>el.remove(), 4500);
+  window.noticeTimer = setTimeout(() => el.remove(), 4500);
+}
+
+async function signIn(email, password) {
+  const client = await initSupabase();
+  if (!client) throw new Error("Supabase is not configured. Check js/supabase-config.js.");
+  const { data, error } = await client.auth.signInWithPassword({
+    email: email.trim(),
+    password
+  });
+  if (error) throw error;
+  if (!data?.session) throw new Error("Login succeeded but no active session was created.");
+  return data.session;
+}
+
+async function signOut() {
+  const client = await initSupabase();
+  if (client) await client.auth.signOut();
+  window.location.replace("sign-in.html");
+}
+
+async function protectAdmin() {
+  const client = await initSupabase();
+  if (!client) return null;
+  const { data, error } = await client.auth.getSession();
+  if (error || !data.session) {
+    window.location.replace("sign-in.html");
+    return null;
+  }
+  const email = document.querySelector("[data-user-email]");
+  if (email) email.textContent = data.session.user.email || "";
+  return data.session;
 }
 
 async function submitInquiry(form) {
@@ -61,38 +101,10 @@ async function submitInquiry(form) {
   showNotice("Your enquiry has been sent successfully.");
 }
 
-async function signIn(email, password) {
-  const client = await initSupabase();
-  if (!client) throw new Error("Supabase is not configured. Check your GitHub Actions secrets and redeploy.");
-  const { data, error } = await client.auth.signInWithPassword({ email: email.trim(), password });
-  if (error) throw error;
-  if (!data?.session) throw new Error("No login session was created.");
-  window.location.href = "admin.html";
-}
-
-async function signOut() {
-  const client = await initSupabase();
-  if (client) await client.auth.signOut();
-  location.href = "sign-in.html";
-}
-
-async function protectAdmin() {
-  const client = await initSupabase();
-  if (!client) return null;
-  const { data: { session } } = await client.auth.getSession();
-  if (!session) {
-    location.href = "sign-in.html";
-    return null;
-  }
-  const email = document.querySelector("[data-user-email]");
-  if (email) email.textContent = session.user.email || "";
-  return session;
-}
-
 async function loadInquiries() {
   const client = await initSupabase();
   if (!client) return;
-  const { data, error } = await client.from("inquiries").select("*").order("created_at", { ascending:false });
+  const { data, error } = await client.from("inquiries").select("*").order("created_at", { ascending: false });
   const tbody = document.querySelector("#inquiries-body");
   if (!tbody) return;
   if (error) {
@@ -117,22 +129,22 @@ async function loadServices() {
   const { data, error } = await client.from("services").select("*").eq("published", true).order("sort_order");
   const grid = document.querySelector("[data-services-grid]");
   if (!grid || error || !data?.length) return;
-  grid.innerHTML = data.map((s,i)=>`
+  grid.innerHTML = data.map((s, i) => `
     <article class="service-card reveal visible">
       <div class="service-img">${s.image_url ? `<img src="${escapeAttr(s.image_url)}" alt="${escapeAttr(s.title)}">` : ""}</div>
       <div class="service-body">
-        <div><div class="service-no">${String(i+1).padStart(2,"0")} — ${escapeHtml(s.category || "Service")}</div>
+        <div><div class="service-no">${String(i + 1).padStart(2, "0")} — ${escapeHtml(s.category || "Service")}</div>
         <h3 style="margin-top:12px">${escapeHtml(s.title)}</h3>
         <p style="margin-top:16px">${escapeHtml(s.description || "")}</p></div>
-        <div class="tags">${(s.tags || []).map(t=>`<span>${escapeHtml(t)}</span>`).join("")}</div>
+        <div class="tags">${(s.tags || []).map(t => `<span>${escapeHtml(t)}</span>`).join("")}</div>
       </div>
     </article>`).join("");
 }
 
-async function uploadImage(file, bucket="site-images") {
+async function uploadImage(file, bucket = "site-images") {
   const client = await initSupabase();
   if (!client) throw new Error("Supabase is not configured");
-  const safeName = file.name.toLowerCase().replace(/[^a-z0-9._-]/g,"-");
+  const safeName = file.name.toLowerCase().replace(/[^a-z0-9._-]/g, "-");
   const path = `${Date.now()}-${safeName}`;
   const { error } = await client.storage.from(bucket).upload(path, file, {
     cacheControl: "3600",
@@ -140,66 +152,59 @@ async function uploadImage(file, bucket="site-images") {
     contentType: file.type
   });
   if (error) throw error;
-  const { data } = client.storage.from(bucket).getPublicUrl(path);
-  return data.publicUrl;
+  return client.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }
 
 function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  return String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
 }
 function escapeAttr(value) { return escapeHtml(value); }
 
 document.addEventListener("DOMContentLoaded", async () => {
   const menu = document.querySelector(".menu");
   const navLinks = document.querySelector(".nav-links");
-  if(menu) {
-    menu.addEventListener("click",()=>navLinks?.classList.toggle("open"));
-    navLinks?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>navLinks.classList.remove("open")));
+  if (menu) {
+    menu.addEventListener("click", () => navLinks?.classList.toggle("open"));
+    navLinks?.querySelectorAll("a").forEach(a => a.addEventListener("click", () => navLinks.classList.remove("open")));
   }
 
-  const observer = new IntersectionObserver(entries=>{
-    entries.forEach(entry=>{ if(entry.isIntersecting) entry.target.classList.add("visible"); });
-  },{threshold:.12});
-  document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add("visible"); });
+    }, { threshold: .12 });
+    document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+  } else {
+    document.querySelectorAll(".reveal").forEach(el => el.classList.add("visible"));
+  }
 
-  document.querySelectorAll("[data-map]").forEach(card=>{
-    card.addEventListener("click",()=>{
-      document.querySelectorAll("[data-map]").forEach(x=>x.classList.remove("selected"));
+  document.querySelectorAll("[data-map]").forEach(card => {
+    card.addEventListener("click", () => {
+      document.querySelectorAll("[data-map]").forEach(x => x.classList.remove("selected"));
       card.classList.add("selected");
-      const iframe=document.querySelector("#location-map");
-      if(iframe) iframe.src=card.dataset.map;
+      const iframe = document.querySelector("#location-map");
+      if (iframe) iframe.src = card.dataset.map;
     });
   });
 
-  document.querySelectorAll("form[data-inquiry-form]").forEach(form=>{
-    form.addEventListener("submit",async e=>{
+  document.querySelectorAll("form[data-inquiry-form]").forEach(form => {
+    form.addEventListener("submit", async e => {
       e.preventDefault();
-      const button=form.querySelector("button[type=submit]");
-      const old=button?.textContent;
-      if(button){button.disabled=true;button.textContent="Sending…";}
+      const button = form.querySelector("button[type=submit]");
+      const old = button?.textContent;
+      if (button) { button.disabled = true; button.textContent = "Sending…"; }
       try { await submitInquiry(form); }
-      finally { if(button){button.disabled=false;button.textContent=old;}}
+      finally { if (button) { button.disabled = false; button.textContent = old; } }
     });
   });
 
-  document.querySelectorAll("form[data-demo]").forEach(form=>{
-    form.addEventListener("submit",e=>{
-      e.preventDefault();
-      showNotice("This form is ready to connect to your backend.");
-    });
-  });
-
-  const year=document.querySelector("[data-year]");
-  if(year) year.textContent=new Date().getFullYear();
+  const year = document.querySelector("[data-year]");
+  if (year) year.textContent = new Date().getFullYear();
 
   if (document.body.dataset.admin === "true") {
     const session = await protectAdmin();
-    if (session) {
-      await loadInquiries();
-    }
+    if (session) await loadInquiries();
   }
+
   await initSupabase();
   await loadServices();
 });
-
-

@@ -28,6 +28,7 @@ const config = `window.supabaseConfig = {
 const outputPath = path.join(
   __dirname,
   "..",
+  "js",
   "supabase-config.js"
 );
 

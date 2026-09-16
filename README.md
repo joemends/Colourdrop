@@ -27,3 +27,8 @@ The existing Supabase database, authentication, enquiry, services, gallery and a
 - `reset-password.html` securely sets a new password after a Supabase recovery link is opened.
 - In Supabase Dashboard → Authentication → URL Configuration, add the deployed site URL and the `reset-password.html` URL to Redirect URLs. For GitHub Pages, use your actual repository Pages path (for example, `https://YOUR-USERNAME.github.io/YOUR-REPOSITORY/reset-password.html`).
 - If email confirmation is enabled in Supabase, new accounts must confirm their email before signing in.
+
+## Password Reset
+The authentication flow includes `reset-password.html`. Configure Supabase Authentication → URL Configuration so the deployed site allows the reset callback URL:
+`https://YOUR-USERNAME.github.io/YOUR-REPOSITORY/reset-password.html`
+The Sign In page's “Forgot your password?” form sends users to this page after they click the email reset link.

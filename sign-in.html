@@ -202,7 +202,7 @@
   <script src="js/supabase-config.js"></script>
   <script src="js/supabase-app.js"></script>
   <script>
-   (async()=>{
+   (async function(){
     const loginForm=document.getElementById('login-form');
     const signupForm=document.getElementById('signup-form');
     const resetForm=document.getElementById('reset-request-form');
@@ -216,29 +216,90 @@
     function showMode(mode){
       tabs.forEach(t=>t.classList.toggle('active',t.dataset.mode===mode));
       loginForm.hidden=mode!=='login'; signupForm.hidden=mode!=='signup'; resetForm.hidden=true;
-      if(mode==='signup'){eyebrow.textContent='Create Account';title.innerHTML='Join<br/><span style="color:var(--accent)">Color Drop.</span>';description.textContent='Create an account using your email and a secure password.';}
-      else {eyebrow.textContent='Account Access';title.innerHTML='Welcome<br/><span style="color:var(--accent)">back.</span>';description.textContent='Sign in to continue to the Color Drop administration dashboard.';}
+      if(mode==='signup'){
+        eyebrow.textContent='Create Account'; title.innerHTML='Join<br/><span style="color:var(--accent)">Color Drop.</span>';
+        description.textContent='Create an account using your email and a secure password.';
+      } else {
+        eyebrow.textContent='Account Access'; title.innerHTML='Welcome<br/><span style="color:var(--accent)">back.</span>';
+        description.textContent='Sign in to continue to the Color Drop administration dashboard.';
+      }
     }
+
     tabs.forEach(t=>t.addEventListener('click',()=>showMode(t.dataset.mode)));
-    document.getElementById('forgot-password').addEventListener('click',()=>{loginForm.hidden=true;signupForm.hidden=true;resetForm.hidden=false;tabs.forEach(t=>t.classList.remove('active'));eyebrow.textContent='Password Reset';title.innerHTML='Reset your<br/><span style="color:var(--accent)">password.</span>';description.textContent='Enter your account email and we will send you a secure reset link.';});
+    document.getElementById('forgot-password').addEventListener('click',()=>{
+      loginForm.hidden=true; signupForm.hidden=true; resetForm.hidden=false; tabs.forEach(t=>t.classList.remove('active'));
+      eyebrow.textContent='Password Reset'; title.innerHTML='Reset your<br/><span style="color:var(--accent)">password.</span>';
+      description.textContent='Enter your account email and we will send you a secure reset link.';
+    });
     document.querySelector('.back-login').addEventListener('click',()=>showMode('login'));
 
     loginForm.addEventListener('submit',async e=>{
-      e.preventDefault(); const button=document.getElementById('login-button'); button.disabled=true; setStatus('login-status','Signing in…','info');
-      try{const email=document.getElementById('login-email').value.trim(),password=document.getElementById('login-password').value;if(!email||!password)throw new Error('Enter both your email and password.');const client=await initSupabase();if(!client)throw new Error('Supabase configuration is missing.');const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;if(!data?.session)throw new Error('Login succeeded but no session was returned.');setStatus('login-status','Login successful. Opening admin dashboard…','success');window.location.replace('admin.html');}catch(err){console.error(err);setStatus('login-status',err?.message||'Sign-in failed. Check your email and password.','error');button.disabled=false;}
+      e.preventDefault();
+      const button=document.getElementById('login-button'); button.disabled=true;
+      setStatus('login-status','Signing in…','info');
+      try{
+        const email=document.getElementById('login-email').value.trim();
+        const password=document.getElementById('login-password').value;
+        if(!email||!password) throw new Error('Enter both your email and password.');
+        const session=await signIn(email,password);
+        if(!session) throw new Error('No active login session was created.');
+        setStatus('login-status','Login successful. Opening admin dashboard…','success');
+        window.location.replace('admin.html');
+      }catch(err){
+        console.error('Sign-in error:',err);
+        let message=err?.message||'Sign-in failed. Check your email and password.';
+        if(/email not confirmed/i.test(message)) message='Please confirm your email address from the Supabase confirmation email before signing in.';
+        if(/invalid login credentials/i.test(message)) message='Incorrect email or password.';
+        setStatus('login-status',message,'error');
+      }finally{button.disabled=false;}
     });
 
     signupForm.addEventListener('submit',async e=>{
-      e.preventDefault(); const button=document.getElementById('signup-button'); button.disabled=true; setStatus('signup-status','Creating your account…','info');
-      try{const email=document.getElementById('signup-email').value.trim(),password=document.getElementById('signup-password').value,confirm=document.getElementById('signup-confirm').value;if(!email||!password||!confirm)throw new Error('Complete all fields.');if(password.length<6)throw new Error('Password must be at least 6 characters.');if(password!==confirm)throw new Error('Passwords do not match.');const client=await initSupabase();if(!client)throw new Error('Supabase configuration is missing.');const {data,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:redirectUrl('admin.html')}});if(error)throw error;if(data?.session){setStatus('signup-status','Account created. Opening admin dashboard…','success');window.location.replace('admin.html');}else{setStatus('signup-status','Account created. Check your email for the confirmation link, then sign in.','success');signupForm.reset();}}catch(err){console.error(err);setStatus('signup-status',err?.message||'Could not create the account.','error');}finally{button.disabled=false;}
+      e.preventDefault();
+      const button=document.getElementById('signup-button'); button.disabled=true;
+      setStatus('signup-status','Creating your account…','info');
+      try{
+        const email=document.getElementById('signup-email').value.trim();
+        const password=document.getElementById('signup-password').value;
+        const confirm=document.getElementById('signup-confirm').value;
+        if(!email||!password||!confirm) throw new Error('Complete all fields.');
+        if(password.length<6) throw new Error('Password must be at least 6 characters.');
+        if(password!==confirm) throw new Error('Passwords do not match.');
+        const client=await initSupabase();
+        if(!client) throw new Error('Supabase configuration is missing.');
+        const {data,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:redirectUrl('sign-in.html')}});
+        if(error) throw error;
+        if(data?.session){
+          setStatus('signup-status','Account created. Opening admin dashboard…','success');
+          window.location.replace('admin.html');
+        }else{
+          setStatus('signup-status','Account created. Check your email for the confirmation link, then sign in.','success');
+          signupForm.reset();
+        }
+      }catch(err){console.error('Sign-up error:',err);setStatus('signup-status',err?.message||'Could not create the account.','error');}
+      finally{button.disabled=false;}
     });
 
     resetForm.addEventListener('submit',async e=>{
-      e.preventDefault(); const button=document.getElementById('reset-button'); button.disabled=true; setStatus('reset-status','Sending reset link…','info');
-      try{const email=document.getElementById('reset-email').value.trim();if(!email)throw new Error('Enter your email address.');const client=await initSupabase();if(!client)throw new Error('Supabase configuration is missing.');const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:redirectUrl('reset-password.html')});if(error)throw error;setStatus('reset-status','If an account exists for that email, a password-reset link has been sent. Check your inbox.','success');resetForm.reset();}catch(err){console.error(err);setStatus('reset-status',err?.message||'Could not send the reset link.','error');}finally{button.disabled=false;}
+      e.preventDefault();
+      const button=document.getElementById('reset-button'); button.disabled=true;
+      setStatus('reset-status','Sending reset link…','info');
+      try{
+        const email=document.getElementById('reset-email').value.trim();
+        if(!email) throw new Error('Enter your email address.');
+        const client=await initSupabase();
+        if(!client) throw new Error('Supabase configuration is missing.');
+        const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:redirectUrl('reset-password.html')});
+        if(error) throw error;
+        setStatus('reset-status','If an account exists for that email, a password-reset link has been sent. Check your inbox.','success');
+        resetForm.reset();
+      }catch(err){console.error('Reset request error:',err);setStatus('reset-status',err?.message||'Could not send the reset link.','error');}
+      finally{button.disabled=false;}
     });
 
-    const y=document.querySelector('[data-year]');if(y)y.textContent=new Date().getFullYear(); await initSupabase();
+    const y=document.querySelector('[data-year]');if(y)y.textContent=new Date().getFullYear();
+    const client=await initSupabase();
+    if(!client) setStatus('login-status','Supabase is not configured. Make sure js/supabase-config.js contains your Supabase URL and anon key.','error');
    })();
   </script>
  </body>
