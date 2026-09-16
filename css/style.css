@@ -829,3 +829,7 @@ p{
     margin-top:7px;
   }
 }
+
+
+/* Authentication */
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:26px;padding:5px;background:#f4f1f8;border-radius:12px}.auth-tab{border:0;background:transparent;padding:12px 10px;border-radius:9px;font:inherit;font-weight:700;cursor:pointer;color:#555}.auth-tab.active{background:#fff;color:#111;box-shadow:0 3px 12px rgba(0,0,0,.08)}.text-link{border:0;background:none;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;padding:10px 0 0}.text-link:hover{text-decoration:underline}.login-status{margin-top:14px;padding:12px 14px;border-radius:10px;display:none;font-weight:600}.login-status.error{display:block;background:#fff0f0;color:#b42318}.login-status.info{display:block;background:#f5f0ff;color:#6b21a8}.login-status.success{display:block;background:#ecfdf3;color:#067647}.back-login{display:block;margin:8px auto 0}

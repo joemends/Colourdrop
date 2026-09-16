@@ -68,42 +68,41 @@
   <main>
    <section class="page-hero">
     <div class="container reveal">
-     <div class="eyebrow">
-      Admin Sign In
-     </div>
-     <h1>
-      Welcome
-      <br/>
-      <span style="color:var(--accent)">
-       back.
-      </span>
-     </h1>
-     <p>
-      Sign in with the administrator account created in Supabase.
-     </p>
+     <div class="eyebrow" id="auth-eyebrow">Account Access</div>
+     <h1 id="auth-title">Welcome<br/><span style="color:var(--accent)">back.</span></h1>
+     <p id="auth-description">Sign in to continue to the Color Drop administration dashboard.</p>
     </div>
    </section>
    <section class="section">
     <div class="container" style="max-width:560px">
      <div class="info-card reveal">
-      <form id="login-form" novalidate="">
-       <div class="field">
-        <label for="login-email">
-         Email
-        </label>
-        <input autocomplete="username" id="login-email" name="email" placeholder="you@example.com" required="" type="email"/>
-       </div>
-       <div class="field" style="margin-top:16px">
-        <label for="login-password">
-         Password
-        </label>
-        <input autocomplete="current-password" id="login-password" name="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required="" type="password"/>
-       </div>
-       <div aria-live="polite" class="login-status" id="login-status" role="alert">
-       </div>
-       <button class="btn primary" id="login-button" style="margin-top:24px;width:100%" type="submit">
-        Sign in
-       </button>
+      <div class="auth-tabs" role="tablist" aria-label="Account options">
+       <button class="auth-tab active" type="button" data-mode="login">Sign In</button>
+       <button class="auth-tab" type="button" data-mode="signup">Create Account</button>
+      </div>
+
+      <form id="login-form" novalidate>
+       <div class="field"><label for="login-email">Email</label><input autocomplete="username" id="login-email" name="email" placeholder="you@example.com" required type="email"/></div>
+       <div class="field" style="margin-top:16px"><label for="login-password">Password</label><input autocomplete="current-password" id="login-password" name="password" placeholder="••••••••" required type="password"/></div>
+       <button class="text-link" id="forgot-password" type="button">Forgot your password?</button>
+       <div aria-live="polite" class="login-status" id="login-status" role="alert"></div>
+       <button class="btn primary" id="login-button" style="margin-top:24px;width:100%" type="submit">Sign in</button>
+      </form>
+
+      <form id="signup-form" novalidate hidden>
+       <div class="field"><label for="signup-email">Email</label><input autocomplete="email" id="signup-email" name="email" placeholder="you@example.com" required type="email"/></div>
+       <div class="field" style="margin-top:16px"><label for="signup-password">Password</label><input autocomplete="new-password" id="signup-password" name="password" placeholder="At least 6 characters" minlength="6" required type="password"/></div>
+       <div class="field" style="margin-top:16px"><label for="signup-confirm">Confirm Password</label><input autocomplete="new-password" id="signup-confirm" name="confirm" placeholder="Repeat your password" minlength="6" required type="password"/></div>
+       <div aria-live="polite" class="login-status" id="signup-status" role="alert"></div>
+       <button class="btn primary" id="signup-button" style="margin-top:24px;width:100%" type="submit">Create account</button>
+      </form>
+
+      <form id="reset-request-form" novalidate hidden>
+       <div class="field"><label for="reset-email">Email</label><input autocomplete="email" id="reset-email" name="email" placeholder="you@example.com" required type="email"/></div>
+       <p style="margin-top:12px">We'll send a secure password-reset link to this email address.</p>
+       <div aria-live="polite" class="login-status" id="reset-status" role="alert"></div>
+       <button class="btn primary" id="reset-button" style="margin-top:24px;width:100%" type="submit">Send reset link</button>
+       <button class="text-link back-login" type="button">Back to sign in</button>
       </form>
      </div>
     </div>
@@ -199,14 +198,48 @@
     </span>
    </div>
   </footer>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-  </script>
-  <script src="js/supabase-config.js">
-  </script>
-  <script src="js/supabase-app.js">
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-app.js"></script>
   <script>
-   (async()=>{const form=document.getElementById('login-form'),status=document.getElementById('login-status'),button=document.getElementById('login-button');function msg(text,type){status.textContent=text;status.className='login-status '+type}form.addEventListener('submit',async e=>{e.preventDefault();msg('Signing in…','info');button.disabled=true;try{const email=document.getElementById('login-email').value.trim();const password=document.getElementById('login-password').value;if(!email||!password)throw new Error('Enter both your email and password.');if(!window.supabaseConfig?.url||!window.supabaseConfig?.anonKey)throw new Error('Supabase configuration is missing. Supabase configuration is missing. Check your GitHub Pages deployment secrets.');if(!window.supabase)throw new Error('Supabase library did not load. Check the internet/CDN connection.');const client=await initSupabase();if(!client)throw new Error('Supabase client could not be initialized.');const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;if(!data?.session)throw new Error('Login succeeded but no session was returned.');msg('Login successful. Opening admin dashboard…','success');window.location.replace('admin.html')}catch(err){console.error('Supabase login error:',err);msg(err?.message||'Sign-in failed. Check your email and password.','error');button.disabled=false}});const y=document.querySelector('[data-year]');if(y)y.textContent=new Date().getFullYear()})()
+   (async()=>{
+    const loginForm=document.getElementById('login-form');
+    const signupForm=document.getElementById('signup-form');
+    const resetForm=document.getElementById('reset-request-form');
+    const tabs=[...document.querySelectorAll('.auth-tab')];
+    const title=document.getElementById('auth-title');
+    const eyebrow=document.getElementById('auth-eyebrow');
+    const description=document.getElementById('auth-description');
+
+    function setStatus(id,text,type){const el=document.getElementById(id);el.textContent=text;el.className='login-status '+type;}
+    function redirectUrl(file){return new URL(file,window.location.href).href;}
+    function showMode(mode){
+      tabs.forEach(t=>t.classList.toggle('active',t.dataset.mode===mode));
+      loginForm.hidden=mode!=='login'; signupForm.hidden=mode!=='signup'; resetForm.hidden=true;
+      if(mode==='signup'){eyebrow.textContent='Create Account';title.innerHTML='Join<br/><span style="color:var(--accent)">Color Drop.</span>';description.textContent='Create an account using your email and a secure password.';}
+      else {eyebrow.textContent='Account Access';title.innerHTML='Welcome<br/><span style="color:var(--accent)">back.</span>';description.textContent='Sign in to continue to the Color Drop administration dashboard.';}
+    }
+    tabs.forEach(t=>t.addEventListener('click',()=>showMode(t.dataset.mode)));
+    document.getElementById('forgot-password').addEventListener('click',()=>{loginForm.hidden=true;signupForm.hidden=true;resetForm.hidden=false;tabs.forEach(t=>t.classList.remove('active'));eyebrow.textContent='Password Reset';title.innerHTML='Reset your<br/><span style="color:var(--accent)">password.</span>';description.textContent='Enter your account email and we will send you a secure reset link.';});
+    document.querySelector('.back-login').addEventListener('click',()=>showMode('login'));
+
+    loginForm.addEventListener('submit',async e=>{
+      e.preventDefault(); const button=document.getElementById('login-button'); button.disabled=true; setStatus('login-status','Signing in…','info');
+      try{const email=document.getElementById('login-email').value.trim(),password=document.getElementById('login-password').value;if(!email||!password)throw new Error('Enter both your email and password.');const client=await initSupabase();if(!client)throw new Error('Supabase configuration is missing.');const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;if(!data?.session)throw new Error('Login succeeded but no session was returned.');setStatus('login-status','Login successful. Opening admin dashboard…','success');window.location.replace('admin.html');}catch(err){console.error(err);setStatus('login-status',err?.message||'Sign-in failed. Check your email and password.','error');button.disabled=false;}
+    });
+
+    signupForm.addEventListener('submit',async e=>{
+      e.preventDefault(); const button=document.getElementById('signup-button'); button.disabled=true; setStatus('signup-status','Creating your account…','info');
+      try{const email=document.getElementById('signup-email').value.trim(),password=document.getElementById('signup-password').value,confirm=document.getElementById('signup-confirm').value;if(!email||!password||!confirm)throw new Error('Complete all fields.');if(password.length<6)throw new Error('Password must be at least 6 characters.');if(password!==confirm)throw new Error('Passwords do not match.');const client=await initSupabase();if(!client)throw new Error('Supabase configuration is missing.');const {data,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:redirectUrl('admin.html')}});if(error)throw error;if(data?.session){setStatus('signup-status','Account created. Opening admin dashboard…','success');window.location.replace('admin.html');}else{setStatus('signup-status','Account created. Check your email for the confirmation link, then sign in.','success');signupForm.reset();}}catch(err){console.error(err);setStatus('signup-status',err?.message||'Could not create the account.','error');}finally{button.disabled=false;}
+    });
+
+    resetForm.addEventListener('submit',async e=>{
+      e.preventDefault(); const button=document.getElementById('reset-button'); button.disabled=true; setStatus('reset-status','Sending reset link…','info');
+      try{const email=document.getElementById('reset-email').value.trim();if(!email)throw new Error('Enter your email address.');const client=await initSupabase();if(!client)throw new Error('Supabase configuration is missing.');const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:redirectUrl('reset-password.html')});if(error)throw error;setStatus('reset-status','If an account exists for that email, a password-reset link has been sent. Check your inbox.','success');resetForm.reset();}catch(err){console.error(err);setStatus('reset-status',err?.message||'Could not send the reset link.','error');}finally{button.disabled=false;}
+    });
+
+    const y=document.querySelector('[data-year]');if(y)y.textContent=new Date().getFullYear(); await initSupabase();
+   })();
   </script>
  </body>
 </html>

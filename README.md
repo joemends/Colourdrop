@@ -20,3 +20,10 @@ The Supabase browser anon key is intended for frontend use. Database/storage sec
 - Admin: `sign-in.html` → `admin.html`
 
 The existing Supabase database, authentication, enquiry, services, gallery and admin logic is preserved.
+
+
+## Authentication
+- `sign-in.html` supports Sign In, account creation, and password-reset requests.
+- `reset-password.html` securely sets a new password after a Supabase recovery link is opened.
+- In Supabase Dashboard → Authentication → URL Configuration, add the deployed site URL and the `reset-password.html` URL to Redirect URLs. For GitHub Pages, use your actual repository Pages path (for example, `https://YOUR-USERNAME.github.io/YOUR-REPOSITORY/reset-password.html`).
+- If email confirmation is enabled in Supabase, new accounts must confirm their email before signing in.
