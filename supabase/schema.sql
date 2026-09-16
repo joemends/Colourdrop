@@ -160,3 +160,31 @@ create policy "authenticated can delete site images"
 on storage.objects for delete
 to authenticated
 using (bucket_id = 'site-images');
+
+
+-- SITE SETTINGS / BRANDING
+create table if not exists public.site_settings (
+  id text primary key,
+  site_name text not null default 'Color Drop',
+  logo_url text,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.site_settings enable row level security;
+
+drop policy if exists "public can read site settings" on public.site_settings;
+create policy "public can read site settings"
+on public.site_settings for select
+to anon, authenticated
+using (true);
+
+drop policy if exists "authenticated can manage site settings" on public.site_settings;
+create policy "authenticated can manage site settings"
+on public.site_settings for all
+to authenticated
+using (true)
+with check (true);
+
+insert into public.site_settings (id, site_name)
+values ('site', 'Color Drop')
+on conflict (id) do nothing;

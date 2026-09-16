@@ -197,10 +197,10 @@
        Manage enquiries and your website content through Supabase.
       </p>
      </div>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
-     <a class="btn primary" href="logout.html">Sign out</a>
-     <a class="btn" href="index.html">View website</a>
+      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+       <a class="btn" href="index.html">View Website</a>
+       <button class="btn primary" type="button" onclick="signOut()">Log Out</button>
+      </div>
     </div>
     <div class="admin-nav">
      <button onclick="document.getElementById('inquiries').scrollIntoView({behavior:'smooth'})">
@@ -208,6 +208,9 @@
      </button>
      <button onclick="document.getElementById('media').scrollIntoView({behavior:'smooth'})">
       Media
+     </button>
+     <button onclick="document.getElementById('branding').scrollIntoView({behavior:'smooth'})">
+      Logo
      </button>
     </div>
     <!-- ========================= -->
@@ -257,6 +260,27 @@
       </table>
      </div>
     </section>
+    <!-- ========================= -->
+    <!-- BRANDING -->
+    <!-- ========================= -->
+    <section class="admin-card" id="branding">
+     <div class="eyebrow">Website identity</div>
+     <h2 style="font-size:2.5rem;margin-bottom:10px">Logo Manager</h2>
+     <p style="margin-bottom:22px">Upload the logo you want displayed across the public website. PNG, JPG, WEBP or SVG are supported.</p>
+     <form id="logo-form" class="media-form">
+      <div>
+       <label for="site-logo">Choose new logo</label>
+       <input id="site-logo" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" required>
+       <div class="media-preview" style="max-width:300px;aspect-ratio:1/1">
+        <span id="logo-preview-text">Current/new logo preview</span>
+        <img id="logo-preview-image" alt="Logo preview">
+       </div>
+      </div>
+      <button class="btn primary" id="logo-save-button" type="submit">Save Website Logo</button>
+     </form>
+     <div class="upload-status" id="logo-result"></div>
+    </section>
+
     <!-- ========================= -->
     <!-- MEDIA -->
     <!-- ========================= -->
@@ -486,6 +510,7 @@ document.addEventListener(
     setupImagePreview();
 
     setupMediaForm();
+    setupLogoManager();
 
   }
 );
@@ -1117,6 +1142,41 @@ async function deleteGalleryItem(id){
 
   }
 
+}
+
+/* =====================================
+   LOGO MANAGER
+===================================== */
+function setupLogoManager(){
+  const form=document.getElementById("logo-form");
+  const input=document.getElementById("site-logo");
+  const preview=document.getElementById("logo-preview-image");
+  const text=document.getElementById("logo-preview-text");
+  const button=document.getElementById("logo-save-button");
+  if(!form) return;
+
+  loadSiteBranding().then(settings=>{
+    if(settings?.logo_url){ preview.src=settings.logo_url; preview.style.display="block"; text.style.display="none"; }
+  });
+  input.addEventListener("change",()=>{
+    const file=input.files?.[0];
+    if(!file) return;
+    preview.src=URL.createObjectURL(file); preview.style.display="block"; text.style.display="none";
+  });
+  form.addEventListener("submit",async e=>{
+    e.preventDefault();
+    const file=input.files?.[0];
+    const result=document.getElementById("logo-result");
+    if(!file){ showUploadResult("Choose a logo first.","error"); return; }
+    if(file.size>5*1024*1024){ showUploadResult("Logo must be 5 MB or smaller.","error"); return; }
+    button.disabled=true; button.textContent="Saving…";
+    try{
+      await saveSiteLogo(file);
+      showUploadResult("Website logo updated successfully.","success");
+      input.value="";
+    }catch(err){ console.error(err); showUploadResult("Could not update logo: "+(err.message||err),"error"); }
+    finally{ button.disabled=false; button.textContent="Save Website Logo"; }
+  });
 }
 
 /* =====================================

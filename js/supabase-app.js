@@ -155,6 +155,41 @@ async function uploadImage(file, bucket = "site-images") {
   return client.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }
 
+
+
+async function getSiteSettings() {
+  const client = await initSupabase();
+  if (!client) return null;
+  const { data, error } = await client.from("site_settings").select("*").eq("id", "site").maybeSingle();
+  if (error) { console.warn("Site settings unavailable:", error.message); return null; }
+  return data;
+}
+
+async function loadSiteBranding() {
+  const settings = await getSiteSettings();
+  if (!settings?.logo_url) return settings;
+  document.querySelectorAll(".logo-mark").forEach(mark => {
+    mark.innerHTML = `<img src="${escapeAttr(settings.logo_url)}" alt="${escapeAttr(settings.site_name || "Color Drop")}" style="width:100%;height:100%;object-fit:contain;display:block">`;
+  });
+  document.querySelectorAll("[data-site-name]").forEach(el => el.textContent = settings.site_name || "Color Drop");
+  return settings;
+}
+
+async function saveSiteLogo(file) {
+  const client = await initSupabase();
+  if (!client) throw new Error("Supabase is not configured.");
+  const imageUrl = await uploadImage(file, "site-images");
+  const { error } = await client.from("site_settings").upsert({
+    id: "site",
+    site_name: "Color Drop",
+    logo_url: imageUrl,
+    updated_at: new Date().toISOString()
+  }, { onConflict: "id" });
+  if (error) throw error;
+  await loadSiteBranding();
+  return imageUrl;
+}
+
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
 }
@@ -206,5 +241,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   await initSupabase();
+  await loadSiteBranding();
   await loadServices();
 });
