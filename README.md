@@ -43,3 +43,10 @@ The Sign In page's “Forgot your password?” form sends users to this page aft
 
 ## Website logo
 Admin → Logo lets an authenticated user upload a new site logo. The URL is saved in `site_settings` and loaded across the public pages. Run the latest `supabase/schema.sql` before using this feature.
+
+
+### Email verification flow
+- New accounts are sent to `verify-email.html` after sign-up when email confirmation is required.
+- The verification page shows the account email, provides a resend button with a cooldown, and links back to sign-in or sign-up.
+- Supabase confirmation emails redirect through `auth-callback.html` after the user clicks the verification link.
+- In Supabase Authentication settings, make sure the site's deployed URL and `auth-callback.html` are included in the allowed redirect URLs.
